@@ -1,0 +1,55 @@
+{
+  "name": "hyperapp-compat",
+  "version": "0.0.1",
+  "description": "v2 features in your v1 Hyperapps",
+  "peerDependencies": {
+    "hyperapp": "^1.2.9"
+  },
+  
+  "devDependencies": {
+    "babel-preset-env": "=1.7.0",
+    "eslint": "=5.5.0",
+    "hyperapp": "=1.2.9",
+    "jest": "=22.4.4",
+    "rollup": "=0.65.2",
+    "uglify-js": "=3.4.9"
+  },
+  "scripts": {
+    "clean": "npx rimraf coverage dist node_modules",
+    "format": "npx prettier --write '{src,test}/**/*.js'",
+    "format:check": "npx prettier --list-different {src,test}/**/*.js",
+    "lint": "eslint {src,test}/**/*.js",
+    "test": "jest --coverage",
+    "bundle": "rollup -i src/index.js -o dist/hyperappCompat.js -m -f umd -n hyperappCompat",
+    "minify": "uglifyjs dist/hyperappCompat.js -o dist/hyperappCompat.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=hyperappCompat.js.map",
+    "check": "npm run format:check && npm run lint && npm t",
+    "build": "npm run check && npm run bundle && npm run minify",
+    "prepare": "npm run build",
+    "release": "./pre-flight-tests && npm run clean && npm i && git tag $npm_package_version && git push && git push --tags && npm publish"
+  },
+  "babel": {
+    "presets": "env"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "no-use-before-define": "error"
+    }
+  },
+  "jest": {
+    "testURL": "http://localhost"
+  },
+  "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
+  "license": "MIT",
+  "repository": "okwolf/hyperapp-compat",
+  "homepage": "https://github.com/okwolf/hyperapp-compat",
+  "bugs": {
+    "url": "https://github.com/okwolf/hyperapp-compat/issues"
+  }
+}
