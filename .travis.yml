@@ -8,10 +8,7 @@ env:
   - NODE_ENV=development
 
 before_install:
-  - npm i -g codecov
-
-install:
-  - npm i
+  - npm i -g npx
 
 cache:
   directories:
@@ -20,7 +17,7 @@ cache:
 script:
   - npm run build
   - npm test
-  - codecov
+  - npx codecov
 
 notifications:
   email: false
