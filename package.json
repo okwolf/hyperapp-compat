@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-compat",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "v2 features in your v1 Hyperapps",
   "main": "dist/hyperappCompat.js",
   "module": "src/index.js",
@@ -9,10 +9,10 @@
   },
   "devDependencies": {
     "babel-preset-env": "=1.7.0",
-    "eslint": "=5.5.0",
+    "eslint": "=5.6.1",
     "hyperapp": "=1.2.9",
     "jest": "=22.4.4",
-    "rollup": "=0.65.2",
+    "rollup": "=0.66.2",
     "uglify-js": "=3.4.9"
   },
   "scripts": {
