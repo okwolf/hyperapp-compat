@@ -25,6 +25,10 @@ export default function makeEnhancedView(report, dispatch, view) {
           vdom.attributes[key] = function(currentEvent) {
             dispatch(originalAction, currentEvent);
           };
+          if (key !== key.toLowerCase()) {
+            vdom.attributes[key.toLowerCase()] = vdom.attributes[key];
+            delete vdom.attributes[key];
+          }
         }
       }
       for (var i in vdom.children) {
