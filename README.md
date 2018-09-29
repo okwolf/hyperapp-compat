@@ -19,12 +19,12 @@ import { h, app } from "hyperapp";
 +import withCompat from "hyperapp-compat";
 
 -app(state, actions, view, document.body);
-+withCompat(app)(
++withCompat(app)({
 +  init,
 +  view,
 +  subscriptions,
 +  container: document.body
-+);
++});
 ```
 
 Some [examples](https://codepen.io/collection/AzwZxm) are available to show this in action.
