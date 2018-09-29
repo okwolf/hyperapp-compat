@@ -1,7 +1,8 @@
 import { LIFECYLCE_METHODS } from "./constants";
 import { isFn } from "./utils";
+import refreshSubscriptions from "./refreshSubscriptions";
 
-export default function makeEnhancedView(report, dispatch, view) {
+function makeEnhancedSubview(report, dispatch, view) {
   function patchVdom(state, actions, vdom) {
     if (typeof vdom === "object" && vdom !== null) {
       for (var key in vdom.attributes) {
@@ -34,7 +35,7 @@ export default function makeEnhancedView(report, dispatch, view) {
       for (var i in vdom.children) {
         if (isFn(vdom.children[i])) {
           report("Still using lazy components/subviews");
-          vdom.children[i] = makeEnhancedView(
+          vdom.children[i] = makeEnhancedSubview(
             report,
             dispatch,
             vdom.children[i]
@@ -49,5 +50,25 @@ export default function makeEnhancedView(report, dispatch, view) {
     var vdom = view(state, actions);
     patchVdom(state, actions, vdom);
     return vdom;
+  };
+}
+
+export default function makeEnhancedView(
+  report,
+  dispatch,
+  view,
+  subscriptions
+) {
+  var rootView = makeEnhancedSubview(report, dispatch, view);
+  var currentSubscriptions = [];
+  return function(state, actions) {
+    if (subscriptions) {
+      currentSubscriptions = refreshSubscriptions(
+        subscriptions(state),
+        currentSubscriptions,
+        dispatch
+      );
+    }
+    return rootView(state, actions);
   };
 }

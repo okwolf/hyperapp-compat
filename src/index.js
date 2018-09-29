@@ -6,7 +6,7 @@ import {
 import makeEnhancedActions from "./makeEnhancedActions";
 import makeEnhancers from "./makeEnhancers";
 import makeEnhancedView from "./makeEnhancedView";
-import { isFn, assign } from "./utils";
+import { isFn, isArray, assign } from "./utils";
 
 export default function withCompat(nextApp) {
   return function(propsOrState) {
@@ -58,7 +58,7 @@ export default function withCompat(nextApp) {
         // ignore
       } else if (isFn(obj)) {
         dispatch(obj(state, data));
-      } else if (Array.isArray(obj)) {
+      } else if (isArray(obj)) {
         if (isFn(obj[0])) {
           dispatch(obj[0](state, obj[1], data));
         } else {
@@ -73,7 +73,12 @@ export default function withCompat(nextApp) {
       enhancers.wiredAction,
       props.actions
     );
-    var enhancedView = makeEnhancedView(report, dispatch, props.view);
+    var enhancedView = makeEnhancedView(
+      report,
+      dispatch,
+      props.view,
+      props.subscriptions
+    );
     var container = props.container;
     wiredActions = nextApp(
       props.state,

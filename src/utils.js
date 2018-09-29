@@ -2,6 +2,8 @@ export function isFn(value) {
   return typeof value === "function";
 }
 
+export var isArray = Array.isArray;
+
 export function assign(source, assignments) {
   var result = {},
     i;
@@ -26,4 +28,13 @@ export function difference(source, exclude) {
   return source.filter(function(currentValue) {
     return exclude.indexOf(currentValue) === -1;
   });
+}
+
+export function isSameValue(a, b) {
+  if (a !== b) {
+    for (var k in assign(a, b)) {
+      if (a[k] !== b[k]) return false;
+    }
+  }
+  return true;
 }
