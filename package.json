@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-compat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "v2 features in your v1 Hyperapps",
   "main": "dist/hyperappCompat.js",
   "module": "src/index.js",

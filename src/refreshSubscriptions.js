@@ -8,43 +8,41 @@ function isSameAction(a, b) {
 }
 
 function start(sub, dispatch) {
-  return assign(sub, {
-    cancel: sub.effect(sub, dispatch)
-  });
+  return [sub[0], sub[1], sub[0](sub[1], dispatch)];
 }
 
-function restart(sub, oldSub, dispatch) {
+function cancel(sub) {
+  sub[2]();
+}
+
+var restart = function(sub, oldSub, dispatch) {
   for (var k in assign(sub, oldSub)) {
-    if (
-      k !== "cancel" &&
-      sub[k] !== oldSub[k] &&
-      !isSameAction(sub[k], oldSub[k])
-    ) {
-      oldSub.cancel();
+    if (sub[k] !== oldSub[k] && !isSameAction(sub[k], oldSub[k])) {
+      cancel(oldSub);
       return start(sub, dispatch);
     }
   }
   return oldSub;
-}
+};
 
 export default function refreshSubscriptions(sub, oldSub, dispatch) {
-  if (isArray(sub) || isArray(oldSub)) {
-    var out = [];
-    var subs = isArray(sub) ? sub : [sub];
-    var oldSubs = isArray(oldSub) ? oldSub : [oldSub];
+  var current = [].concat(sub);
+  var previous = [].concat(oldSub);
+  var out = [];
 
-    for (var i = 0; i < subs.length || i < oldSubs.length; i++) {
-      out.push(refreshSubscriptions(subs[i], oldSubs[i], dispatch));
-    }
-
-    return out;
+  for (var i = 0; i < current.length || i < previous.length; i++) {
+    var cSub = current[i];
+    var pSub = previous[i];
+    out.push(
+      cSub
+        ? pSub
+          ? restart(cSub, pSub, dispatch)
+          : start(cSub, dispatch)
+        : pSub
+          ? cancel(pSub)
+          : pSub
+    );
   }
 
-  return sub
-    ? oldSub
-      ? restart(sub, oldSub, dispatch)
-      : start(sub, dispatch)
-    : oldSub
-      ? oldSub.cancel()
-      : oldSub;
+  return out;
 }
