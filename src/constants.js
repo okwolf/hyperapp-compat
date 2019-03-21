@@ -20,8 +20,8 @@ export var REFACTOR_FOR_V2 =
   ". You need to refactor this before moving to Hyperapp 2.0.";
 
 export var LIFECYLCE_METHODS = [
-  "onCreate",
-  "onUpdate",
-  "onRemove",
-  "onDestroy"
+  "oncreate",
+  "onupdate",
+  "onremove",
+  "ondestroy"
 ];

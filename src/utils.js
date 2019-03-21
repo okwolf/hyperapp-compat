@@ -30,11 +30,10 @@ export function difference(source, exclude) {
   });
 }
 
-export function isSameValue(a, b) {
-  if (a !== b) {
-    for (var k in assign(a, b)) {
-      if (a[k] !== b[k]) return false;
-    }
-  }
-  return true;
+export function flatten(arr) {
+  return arr.reduce(function(out, obj) {
+    return out.concat(
+      !obj || obj === true ? false : isFn(obj[0]) ? [obj] : flatten(obj)
+    );
+  }, []);
 }

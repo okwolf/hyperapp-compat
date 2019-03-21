@@ -6,7 +6,7 @@ import {
 import makeEnhancedActions from "./makeEnhancedActions";
 import makeEnhancers from "./makeEnhancers";
 import makeEnhancedView from "./makeEnhancedView";
-import { isFn, isArray, assign } from "./utils";
+import { isFn, isArray, assign, flatten } from "./utils";
 
 export default function withCompat(nextApp) {
   return function(propsOrState) {
@@ -49,20 +49,20 @@ export default function withCompat(nextApp) {
     props.actions[INTERNAL_SET_STATE] = Function.prototype;
 
     var wiredActions;
-    function dispatch(obj, data) {
+    function dispatch(obj, props) {
       var state = wiredActions[INTERNAL_GET_STATE]();
       function setState(nextState) {
         wiredActions[INTERNAL_SET_STATE](nextState);
       }
-      if (obj == null) {
-        // ignore
-      } else if (isFn(obj)) {
-        dispatch(obj(state, data));
+      if (isFn(obj)) {
+        dispatch(obj(state, props));
       } else if (isArray(obj)) {
         if (isFn(obj[0])) {
-          dispatch(obj[0](state, obj[1], data));
+          dispatch(obj[0](state, obj[1], props));
         } else {
-          obj[1][0](obj[1][1], dispatch, setState(obj[0]));
+          flatten(obj.slice(1)).map(function(fx) {
+            fx && fx[0](fx[1], dispatch);
+          }, setState(obj[0]));
         }
       } else {
         setState(obj);

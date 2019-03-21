@@ -1,35 +1,27 @@
 import { LIFECYLCE_METHODS } from "./constants";
-import { isFn } from "./utils";
-import refreshSubscriptions from "./refreshSubscriptions";
+import { isFn, flatten } from "./utils";
+import patchSub from "./patchSub";
 
 function makeEnhancedSubview(report, dispatch, view) {
   function patchVdom(state, actions, vdom) {
     if (typeof vdom === "object" && vdom !== null) {
       for (var key in vdom.attributes) {
         var isLifecycle = LIFECYLCE_METHODS.some(function(lifecyleName) {
-          var matchesExact = lifecyleName === key;
-          var matchesCaseInsensitive =
-            lifecyleName.toLowerCase() === key.toLowerCase();
-          if (matchesCaseInsensitive && !matchesExact) {
+          var matches = lifecyleName === key;
+          if (matches) {
             report(
-              "Still using old lifecycle method: '" +
-                key +
-                "'. Please switch to: '" +
+              "Still using lifecycle method: '" +
                 lifecyleName +
-                "'"
+                "'. Please remove it."
             );
           }
-          return matchesCaseInsensitive;
+          return matches;
         });
         if (key[0] === "o" && key[1] === "n" && !isLifecycle) {
           var originalAction = vdom.attributes[key];
           vdom.attributes[key] = function(currentEvent) {
             dispatch(originalAction, currentEvent);
           };
-          if (key !== key.toLowerCase()) {
-            vdom.attributes[key.toLowerCase()] = vdom.attributes[key];
-            delete vdom.attributes[key];
-          }
         }
       }
       for (var i in vdom.children) {
@@ -63,9 +55,9 @@ export default function makeEnhancedView(
   var currentSubscriptions = [];
   return function(state, actions) {
     if (subscriptions) {
-      currentSubscriptions = refreshSubscriptions(
-        subscriptions(state),
+      currentSubscriptions = patchSub(
         currentSubscriptions,
+        flatten(subscriptions(state)),
         dispatch
       );
     }
