@@ -49,24 +49,25 @@ export default function withCompat(nextApp) {
     props.actions[INTERNAL_SET_STATE] = Function.prototype;
 
     var wiredActions;
-    function dispatch(obj, props) {
+    function dispatch(action, props, obj) {
       var state = wiredActions[INTERNAL_GET_STATE]();
       function setState(nextState) {
         wiredActions[INTERNAL_SET_STATE](nextState);
       }
-      if (isFn(obj)) {
-        dispatch(obj(state, props));
-      } else if (isArray(obj)) {
-        if (isFn(obj[0])) {
-          dispatch(obj[0](state, obj[1], props));
-        } else {
-          flatten(obj.slice(1)).map(function(fx) {
-            fx && fx[0](fx[1], dispatch);
-          }, setState(obj[0]));
-        }
-      } else {
-        setState(obj);
-      }
+      return isFn(action)
+        ? dispatch(action(state, props), obj || props)
+        : isArray(action)
+        ? isFn(action[0])
+          ? dispatch(
+              action[0],
+              isFn((action = action[1])) ? action(props) : action,
+              props
+            )
+          : (flatten(action.slice(1)).map(function(fx) {
+              fx && fx[0](dispatch, fx[1], props);
+            }, setState(action[0])),
+            state)
+        : setState(action);
     }
 
     var enhancedActions = makeEnhancedActions(

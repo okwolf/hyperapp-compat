@@ -18,7 +18,7 @@ export default function patchSub(sub, newSub, dispatch) {
     out.push(
       b
         ? !a || b[0] !== a[0] || shouldRestart(b[1], a[1])
-          ? [b[0], b[1], b[0](b[1], dispatch), a && a[2]()]
+          ? [b[0], b[1], b[0](dispatch, b[1]), a && a[2]()]
           : a
         : a && a[2]()
     );
